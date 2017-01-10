@@ -2,11 +2,19 @@ var mongoclient = require('mongodb').MongoClient;
 var path = require('path');
 var express = require('express');
 var https = require('https');
+var DOMParser = require('xmldom').DOMParser;
 
 var app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/test', function(req, res){
+   res.redirect('test.html');
+   res.end();
+});
+
+//practice for parsing the google result
+// abandoning this - we're going to query bing
 app.get('/getit', function(req, res){
     var options = {
         protocol: 'https:',
@@ -22,8 +30,11 @@ app.get('/getit', function(req, res){
         })
         
         httpsRes.on('end', function(){
-            res.json(concatData.join(''));
-            console.log(concatData.join(''));
+            var doc = new DOMParser().parseFromString( concatData.join(''));
+            var imageTable = doc.getElementsByTagName('images_table');
+            console.log(imageTable);
+            console.log(imageTable.length);
+            console.log(imageTable[0]);
             res.end()
         })
     });
