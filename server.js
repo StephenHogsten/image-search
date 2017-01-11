@@ -14,11 +14,32 @@ app.get('/test', function(req, res){
    res.end();
 });
 
-app.get('/api/:searchquery', function(req, res){
-    //format the api request into the google query
+app.get('/api/latest/imagesearch', function(req, res){ 
+   mongoclient.connect('mongodb://localhost:27017/appdata', function(err, db){
+      if (err) throw err;
+      var resultProm = db.collection('history').find({}, {_id:0}).sort({'when':-1}).limit(10).toArray();
+      resultProm.then( function(data) {
+          res.json(data);
+          res.end();
+          db.close();    
+      });
+   });
+});
+
+app.get('/api/imagesearch/:searchquery', function(req, res){
+    //save to mongodb
+    mongoclient.connect('mongodb://localhost:27017/appdata', function(err, db) {
+        if (err) throw err;
+        db.collection('history').insert({
+            term: req.params.searchquery,
+            when: new Date()
+        });
+        db.close();
+    });
+    
+    //format the api request for passing into google query
     var searchquery = req.params.searchquery.replace(' ', '%20');
     var query = url.parse(req.url, true).query;
-    console.log(query)
     var offset = (query.hasOwnProperty('offset'))? query.offset : 1;
     var options = {
         protocol: 'https:',
@@ -27,10 +48,10 @@ app.get('/api/:searchquery', function(req, res){
         method: 'GET',
         searchType: 'image'
     };
-    console.log(options);
+
     var httpsReq = https.request(options, function(httpsRes){ 
         var concatData = [];
-        
+    
         httpsRes.on('data', function(chunk){ 
             concatData.push(chunk.toString());
         })
@@ -39,7 +60,9 @@ app.get('/api/:searchquery', function(req, res){
             //put the response together and parse for our own return
             var data = JSON.parse(concatData.join(''));
             var results = [];
-            for (var i=0,l=data.items.length; i<l; i++) {
+            for (var i=0,l=data.items.length,d; i<l; i++) {
+                d = data.items[i];
+                if (!d.pagemap.hasOwnProperty('cse_image') || !d.pagemap.hasOwnProperty('cse_thumbnail')) continue;
                 results.push({
                     title: data.items[i].title,
                     url: data.items[i].pagemap.cse_image[0].src,

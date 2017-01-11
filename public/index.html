@@ -4,5 +4,19 @@
 </head>
 
 <body>
-    <h1>Hello World!</h1>
+    <h1>Image Search Abstraction</h1>
+    
+    <h3>User Stories</h3>
+    <blockquqote><ul>
+        <li><b>User Story:</b> I can get the image URLs, alt text and page urls for a set of images relating to a given search string.</li>
+        <li><b>User Story:</b> I can paginate through the responses by adding a ?offset=2 parameter to the URL.</li>
+        <li><b>User Story:</b> I can get a list of the most recently submitted search strings.</li>
+    </ul></blockquqote>
+    
+    <h3>Instructions</h3>
+    <ol>
+        <li>In order to search for images, go to the path <code>.../api/imagesearch/'query'</code> where you replace <code>'query'</code> with your search query</li>
+        <li>If you want to paginate, add a <code>?offset=XXX</code> where you replace <code>XXX</code> with where you want your results to start</li>
+        <li>If you want to review recent queries, go to the path <code>.../api/latest/imagesearch</code></li>
+    </ol>
 </body>
