@@ -2,7 +2,7 @@ var mongoclient = require('mongodb').MongoClient;
 var path = require('path');
 var express = require('express');
 var https = require('https');
-var DOMParser = require('xmldom').DOMParser;
+var url = require('url');
 
 var app = express();
 
@@ -14,14 +14,18 @@ app.get('/test', function(req, res){
 });
 
 //practice for parsing the google result
-// abandoning this - we're going to query bing
-app.get('/getit', function(req, res){
+app.get('/api/:searchquery', function(req, res){
+    var query = url.parse(req.url, true).query;
+    console.log(query)
+    var offset = (query.hasOwnProperty('offset'))? query.offset : 1;
     var options = {
         protocol: 'https:',
-        hostname: 'www.google.com',
-        path: '/search?hl=en&as_st=y&site=imghp&tbm=isch&q=lol%20cat',
-        method: 'GET'
-    }
+        hostname: 'www.googleapis.com',
+        path: '/customsearch/v1?key=AIzaSyCNHybXpvSstGLgoaavycOUvB4pP5Oi6h0&cx=004593805646146666066:0ys9didd2sq&q=' + req.params.searchquery + '&start=' + offset,
+        method: 'GET',
+        searchType: 'image'
+    };
+    console.log(options);
     var httpsReq = https.request(options, function(httpsRes){ 
         var concatData = [];
         
@@ -30,11 +34,8 @@ app.get('/getit', function(req, res){
         })
         
         httpsRes.on('end', function(){
-            var doc = new DOMParser().parseFromString( concatData.join(''));
-            var imageTable = doc.getElementsByTagName('images_table');
-            console.log(imageTable);
-            console.log(imageTable.length);
-            console.log(imageTable[0]);
+            res.json(JSON.parse(concatData.join('')));
+            //console.log(concatData.join(''));
             res.end()
         })
     });

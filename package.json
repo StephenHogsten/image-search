@@ -12,8 +12,7 @@
   "dependencies": {
     "express": "^4.14.0",
     "mongodb": "^2.2.19",
-    "path": "^0.12.7",
-    "xmldom": "^0.1.27"
+    "path": "^0.12.7"
   },
   "devDependencies": {},
   "repository": {

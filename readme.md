@@ -13,11 +13,12 @@ User Story: I can paginate through the responses by adding a ?offset=2 parameter
 User Story: I can get a list of the most recently submitted search strings.
 
 
-Resources:
+Some Resources:
 http://stackoverflow.com/questions/21530274/format-for-a-url-that-goes-to-google-image-search
 https://stenevang.wordpress.com/2013/02/22/google-advanced-power-search-url-request-parameters/
 http://jwebnet.net/advancedgooglesearch.html#advImageSearchURI
 http://stackoverflow.com/questions/5797852/in-node-js-how-do-i-include-functions-from-my-other-files
+http://stackoverflow.com/questions/10209128/google-search-api-wrapper-for-node-js
 
 example query:
 https://www.google.com/search?hl=en&as_st=y&site=imghp&tbm=isch&q=lol%20cat
