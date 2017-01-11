@@ -3,6 +3,7 @@ var path = require('path');
 var express = require('express');
 var https = require('https');
 var url = require('url');
+var key = require('./api-key.js');
 
 var app = express();
 
@@ -13,15 +14,16 @@ app.get('/test', function(req, res){
    res.end();
 });
 
-//practice for parsing the google result
 app.get('/api/:searchquery', function(req, res){
+    //format the api request into the google query
+    var searchquery = req.params.searchquery.replace(' ', '%20');
     var query = url.parse(req.url, true).query;
     console.log(query)
     var offset = (query.hasOwnProperty('offset'))? query.offset : 1;
     var options = {
         protocol: 'https:',
         hostname: 'www.googleapis.com',
-        path: '/customsearch/v1?key=AIzaSyCNHybXpvSstGLgoaavycOUvB4pP5Oi6h0&cx=004593805646146666066:0ys9didd2sq&q=' + req.params.searchquery + '&start=' + offset,
+        path: '/customsearch/v1?key=' + key.key + '&cx=004593805646146666066:0ys9didd2sq&q=' + searchquery + '&start=' + offset,
         method: 'GET',
         searchType: 'image'
     };
@@ -34,8 +36,20 @@ app.get('/api/:searchquery', function(req, res){
         })
         
         httpsRes.on('end', function(){
-            res.json(JSON.parse(concatData.join('')));
-            //console.log(concatData.join(''));
+            //put the response together and parse for our own return
+            var data = JSON.parse(concatData.join(''));
+            var results = [];
+            for (var i=0,l=data.items.length; i<l; i++) {
+                results.push({
+                    title: data.items[i].title,
+                    url: data.items[i].pagemap.cse_image[0].src,
+                    snippet: data.items[i].snippet,
+                    thumbnail: data.items[i].pagemap.cse_thumbnail[0].src,
+                    context: data.items[i].link
+                });
+            }
+            res.json(results);
+            
             res.end()
         })
     });
@@ -46,7 +60,7 @@ app.get('/api/:searchquery', function(req, res){
 })
 
 app.get('/*', function(req, res){
-    res.write('default');
+    res.write('this is not a real place');
     res.end();
 })
 
