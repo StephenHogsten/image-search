@@ -22,3 +22,6 @@ http://stackoverflow.com/questions/10209128/google-search-api-wrapper-for-node-j
 
 example query:
 https://www.google.com/search?hl=en&as_st=y&site=imghp&tbm=isch&q=lol%20cat
+
+Note:
+for this to work, you'll need your own key.js file which exports a key variable that contains a valid google API key
